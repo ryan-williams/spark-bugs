@@ -1,6 +1,8 @@
 
 ## 1MB block + Netty 4.1.6.Final error
 
+Filed as [SPARK-21143](https://issues.apache.org/jira/browse/SPARK-21143):
+
 Run [the test](src/test/scala/com/foo/LargeBlockTest.scala):
 
 ```

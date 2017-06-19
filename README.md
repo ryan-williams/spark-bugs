@@ -1,5 +1,3 @@
-# spark-bugs
-Dumping ground for repros of issues with Apache Spark
 
 ## 1MB block + Netty 4.1.6.Final error
 

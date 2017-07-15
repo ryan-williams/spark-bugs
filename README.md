@@ -1,4 +1,54 @@
-# spark-bugs
-Dumping ground for repros of issues I find with Apache Spark
 
-Specific repros can be found in branches.
+## [LongAccumulator][] race condition
+
+```bash
+git clone https://github.com/ryan-williams/spark-bugs.git
+cd spark-bugs
+sbt package
+spark-submit accumulator-race.jar [repetitions=20] [numElems=10] [partitions=5] 2> /dev/null  # silence Spark's default stderr logging
+```
+
+You'll likely see at least one of the default 20 repetitions fail:
+
+```
+Testing 20 repetitions of 10 elements in 5 partitions
+Error: iteration 1:
+	other: 3
+	lazyOther: 3
+	local: 5
+	lazyLocal: 5
+
+Error: iteration 4:
+	other: 4
+	lazyOther: 4
+	local: 5
+	lazyLocal: 5
+
+Error: iteration 12:
+	other: 4
+	lazyOther: 5
+	local: 5
+	lazyLocal: 5
+
+3 errors
+```
+
+If not, try running again! Increasing the numbers of elements and partitions also "helps" 😂.
+
+### Discussion
+
+There are 4 [`LongAccumulator`][LongAccumulator]s declared in [`Main`]:
+
+- 2 in `Main` itself:
+	- 1 `lazy` ("`lazyLocal`")
+	- 1 not ("`local`")
+- 2 in the adjacent `Spark` object:
+	- 1 `lazy` ("`lazyOther`")
+	- 1 not ("`other`")
+
+In tests, I've only observed `other` and `lazyOther` (the two [LongAccumulator]s declared in the `Spark` object) to have incorrect counts.
+
+However, reasoning about the bug implies that it should generally apply to all `LongAccumulator`s that are written to in tasks that run on executors with more than one "core" (simultaneous task running).
+
+[LongAccumulator]: https://github.com/apache/spark/blob/v2.2.0/core/src/main/scala/org/apache/spark/util/AccumulatorV2.scala#L291
+[`Main`]: src/main/scala/com/foo/Main.scala

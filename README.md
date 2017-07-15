@@ -1,9 +1,10 @@
 
-## [LongAccumulator][] race condition
+## [LongAccumulator][]/[DoubleAccumulator][] race condition
 
 ```bash
 git clone https://github.com/ryan-williams/spark-bugs.git
 cd spark-bugs
+git checkout accum
 sbt package
 spark-submit accumulator-race.jar [repetitions=20] [numElems=10] [partitions=5] 2> /dev/null  # silence Spark's default stderr logging
 ```
@@ -51,4 +52,5 @@ In tests, I've only observed `other` and `lazyOther` (the two [LongAccumulator]s
 However, reasoning about the bug implies that it should generally apply to all `LongAccumulator`s that are written to in tasks that run on executors with more than one "core" (simultaneous task running).
 
 [LongAccumulator]: https://github.com/apache/spark/blob/v2.2.0/core/src/main/scala/org/apache/spark/util/AccumulatorV2.scala#L291
+[DoubleAccumulator]: https://github.com/apache/spark/blob/v2.2.0/core/src/main/scala/org/apache/spark/util/AccumulatorV2.scala#L370
 [`Main`]: src/main/scala/com/foo/Main.scala

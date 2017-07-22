@@ -1,6 +1,9 @@
 
 ## [LongAccumulator][]/[DoubleAccumulator][] race condition
 
+See discussion on [SPARK-21425](https://issues.apache.org/jira/browse/SPARK-21425).
+
+### Running
 ```bash
 git clone https://github.com/ryan-williams/spark-bugs.git
 cd spark-bugs

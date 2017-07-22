@@ -1,6 +1,6 @@
 ## `BlockInfoManager.releaseAllLocksForTask` `None.get`
 
-[Main.scala](src/main/scala/Main.scala): repro of a stack trace discussed in [SPARK-16599](https://issues.apache.org/jira/browse/SPARK-16599).
+[Main.scala](src/main/scala/com/foo/Main.scala): repro of a stack trace discussed in [SPARK-16599](https://issues.apache.org/jira/browse/SPARK-16599).
 
 In the presence of multiple `SparkContext`s, a broadcast block is not found, causing the app to crash.
 

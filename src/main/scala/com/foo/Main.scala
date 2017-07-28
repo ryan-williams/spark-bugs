@@ -91,7 +91,7 @@ object Main extends CaseApp[Opts] {
         .groupByKey()
         .mapValues(Stats(_))
         .collect()
-        .sorted
+        .sortBy(_._1)
         .map { case ((_, group), stats) ⇒ group → stats }
 
     println(s"Analyzing log file $logFile (size ${logFile.size}):")

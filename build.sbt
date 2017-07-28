@@ -1,9 +1,10 @@
 
-scalaVersion := "2.11.8"
+deps ++= Seq(
+  case_app,
+  magic_rdds % "1.5.0-SNAPSHOT",
+  paths % "1.1.1-SNAPSHOT"
+)
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "2.2.0"
+providedDeps += spark
 
-mainClass in (Compile, packageBin) := Some("com.foo.Main")
-
-artifactName := ((_, _, _) ⇒ "block-exception.jar")
-crossTarget in packageBin := baseDirectory.value
+assemblyJarName in assembly := "event-log-lengths.jar"

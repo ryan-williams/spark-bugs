@@ -1,8 +1,24 @@
-# spark-bugs
-Dumping ground for repros of issues I find with Apache Spark
+## Missing `FileCommitProtocol$TaskCommitMessage` kryo registration 
 
-Specific repros can be found in branches:
+```bash
+sbt package
 
-- [SPARK-16599](https://issues.apache.org/jira/browse/SPARK-16599): [`msc`](https://github.com/ryan-williams/spark-bugs/tree/msc) (multiple `SparkContext`s)
-- [SPARK-21143](https://issues.apache.org/jira/browse/SPARK-21143): [`netty`](https://github.com/ryan-williams/spark-bugs/tree/netty)
-- [SPARK-21425](https://issues.apache.org/jira/browse/SPARK-21425): [`accum`](https://github.com/ryan-williams/spark-bugs/tree/accum)
+# Passes in Spark 2.1.1, fails in Spark 2.2.0
+spark-submit save-hadoop-file.jar
+```
+
+As of Spark 2.2.0, the `saveAsNewAPIHadoopFile` job fails with:
+
+```
+java.lang.IllegalArgumentException: Class is not registered: org.apache.spark.internal.io.FileCommitProtocol$TaskCommitMessage
+Note: To register this class use: kryo.register(org.apache.spark.internal.io.FileCommitProtocol$TaskCommitMessage.class);
+	at com.esotericsoftware.kryo.Kryo.getRegistration(Kryo.java:488)
+	at com.esotericsoftware.kryo.util.DefaultClassResolver.writeClass(DefaultClassResolver.java:97)
+	at com.esotericsoftware.kryo.Kryo.writeClass(Kryo.java:517)
+	at com.esotericsoftware.kryo.Kryo.writeClassAndObject(Kryo.java:622)
+	at org.apache.spark.serializer.KryoSerializerInstance.serialize(KryoSerializer.scala:315)
+	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:383)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+```

@@ -1,9 +1,7 @@
 
 scalaVersion := "2.11.8"
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "2.2.0"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "2.2.0" % "provided"
 
-mainClass in (Compile, packageBin) := Some("com.foo.Main")
-
-artifactName := ((_, _, _) ⇒ "block-exception.jar")
+artifactName := ((_, _, _) ⇒ "save-hadoop-file.jar")
 crossTarget in packageBin := baseDirectory.value

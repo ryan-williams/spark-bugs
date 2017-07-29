@@ -1,5 +1,7 @@
 ## Missing `FileCommitProtocol$TaskCommitMessage` kryo registration 
 
+To run/repro:
+
 ```bash
 sbt package
 
@@ -7,7 +9,7 @@ sbt package
 spark-submit save-hadoop-file.jar
 ```
 
-As of Spark 2.2.0, the `saveAsNewAPIHadoopFile` job fails with:
+As of Spark 2.2.0, [the `saveAsNewAPIHadoopFile` job](src/main/scala/com/foo/Main.scala#L26) fails with:
 
 ```
 java.lang.IllegalArgumentException: Class is not registered: org.apache.spark.internal.io.FileCommitProtocol$TaskCommitMessage

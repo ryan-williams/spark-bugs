@@ -1,4 +1,4 @@
-## `no valid constructor` serialization error
+## [SPARK-22288](https://issues.apache.org/jira/browse/SPARK-22288): `no valid constructor` serialization error
  
 Tricky interaction between:
 

@@ -57,7 +57,7 @@ trait App
         /** No extra arguments; always succeeds */
         case 1 ⇒ rdd.filter(filter1).collect
 
-        /** Extra parameter [[s]] is a field of [[App]]; deserialization fails in [[App1]] */
+        /** Extra parameter [[s]] is a field of [[App]]; deserialization fails in [[App1]] and [[App2]] */
         case 2 ⇒ rdd.filter(filter2(_, s)).collect
         case 3 ⇒ rdd.filter(filter3).collect
         case 4 ⇒ rdd.filter(filter3(_)(s)).collect

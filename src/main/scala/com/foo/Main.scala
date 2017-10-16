@@ -130,7 +130,10 @@ class A extends Super1(4) with Serializable {
   def run(): Unit = {
     val sc = new SparkContext(new SparkConf().set("spark.master", "local[4]").set("spark.app.name", "serde-test"))
     try {
-      sc.parallelize(1 to 10).filter(Main.fn(_, s)).collect()
+      sc
+        .parallelize(1 to 10)
+        .filter(Main.fn(_, s))  // danger! closure references `s`, crash ensues
+        .collect()              // driver stack-trace points here
     } finally {
       sc.stop()
     }

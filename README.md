@@ -1,4 +1,4 @@
-## Missing `FileCommitProtocol$TaskCommitMessage` kryo registration 
+## [SPARK-21569](https://issues.apache.org/jira/browse/SPARK-21569): missing `FileCommitProtocol$TaskCommitMessage` kryo registration 
 
 To run/repro:
 

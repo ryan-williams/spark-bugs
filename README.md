@@ -95,7 +95,7 @@ java.io.InvalidClassException: com.foo.App1; no valid constructor
 The driver stack-trace will point to the line that triggered the Spark job that exercised the RDD `map` or `filter`, which can be extra confusing.
 
 The exception is confusing for several reasons:
-- the issue occurs even if the class itself `extends Serializable`, as long as its superclass does not directly extend `Serializable (cf. [`App2`] vs. [`App3`])
+- the issue occurs even if the class itself `extends Serializable`, as long as its superclass does not directly extend `Serializable` (cf. [`App2`] vs. [`App3`])
 - it only occurs if a closure references a *field* of the class, not if it references method-local variables (cf. [filters 2-5] vs. [6-9][filters 6-9]
 - the reference can be invisible (e.g. to an `implicit` parameter) or inconspicuous / inline (as in a partial-application)
 

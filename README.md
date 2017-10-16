@@ -53,6 +53,8 @@ App4, 8: success
 App4, 9: success
 ``` 
 
+See [Main.scala].
+
 ### Discussion
 
 When a closure passed to an RDD `map` or `filter` references a field of a class that extends a non-`Serializable` `class` with a non-nullary constructor, deserialization of the class fails with a cryptic message / trace:
@@ -93,7 +95,15 @@ java.io.InvalidClassException: com.foo.App1; no valid constructor
 The driver stack-trace will point to the line that triggered the Spark job that exercised the RDD `map` or `filter`, which can be extra confusing.
 
 The exception is confusing for several reasons:
-- the issue occurs even if the class itself `extends Serializable`, as long as its superclass does not directly extend `Serializable
-- it only occurs if a closure references a *field* of the class, not if it references method-local variables
+- the issue occurs even if the class itself `extends Serializable`, as long as its superclass does not directly extend `Serializable (cf. [`App2`] vs. [`App3`])
+- it only occurs if a closure references a *field* of the class, not if it references method-local variables (cf. [filters 2-5] vs. [6-9][filters 6-9]
 - the reference can be invisible (e.g. to an `implicit` parameter) or inconspicuous / inline (as in a partial-application)
 
+
+[`App2`]: https://github.com/ryan-williams/spark-bugs/blob/serde/src/main/scala/com/foo/Main.scala#L84-L85
+[`App3`]: https://github.com/ryan-williams/spark-bugs/blob/serde/src/main/scala/com/foo/Main.scala#L87-L88
+
+[filters 2-5]: https://github.com/ryan-williams/spark-bugs/blob/serde/src/main/scala/com/foo/Main.scala#L60-L64
+[filters 6-9]: https://github.com/ryan-williams/spark-bugs/blob/serde/src/main/scala/com/foo/Main.scala#L66-L70
+
+[Main.scala]: https://github.com/ryan-williams/spark-bugs/blob/serde/src/main/scala/com/foo/Main.scala

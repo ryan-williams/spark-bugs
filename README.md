@@ -1,5 +1,5 @@
 
-## [LongAccumulator][]/[DoubleAccumulator][] race condition
+## Static [LongAccumulator][]/[DoubleAccumulator][] race condition
 
 See discussion on [SPARK-21425](https://issues.apache.org/jira/browse/SPARK-21425).
 
@@ -40,6 +40,8 @@ Error: iteration 12:
 If not, try running again! Increasing the numbers of elements and partitions also "helps" 😂.
 
 ### Discussion
+
+tl;dr: don't make [LongAccumulator][]s/[DoubleAccumulator][]s static! In normal use, they won't be, but in some test-cases it's easy to want to make them static.
 
 There are 4 [`LongAccumulator`][LongAccumulator]s declared in [`Main`]:
 

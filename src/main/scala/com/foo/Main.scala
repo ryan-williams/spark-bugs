@@ -95,25 +95,44 @@ class App4 extends Super3    with App
  */
 object Main {
   def main(args: Array[String]): Unit =
-    Seq(
-      new App1,
-      new App2,
-      new App3,
-      new App4
-    )
-    .map {
-      app ⇒
-        app.getClass.getSimpleName →
-          (1 to 9 map { i ⇒ i → app.run(i) })
+    if (args.length > 0)
+      // If any cmd-line args are passed, run a simple standalone app that demonstrates the error
+      new A().run()
+    else
+      // Otherwise, run a parameter-sweep over apps and filter-closures and print the results
+      Seq(
+        new App1,
+        new App2,
+        new App3,
+        new App4
+      )
+      .map {
+        app ⇒
+          app.getClass.getSimpleName →
+            (1 to 9 map { i ⇒ i → app.run(i) })
+      }
+      .foreach {
+        case (app, results) ⇒
+          results.foreach {
+            case (i, Some(msg)) ⇒
+              println(s"$app, $i: failure: $msg")
+            case (i, _) ⇒
+              println(s"$app, $i: success")
+          }
+          println("")
+      }
+
+  def fn(i: Int, s: String): Boolean = i % 2 == 0
+}
+
+class A extends Super1(4) with Serializable {
+  val s = "abc"
+  def run(): Unit = {
+    val sc = new SparkContext(new SparkConf().set("spark.master", "local[4]").set("spark.app.name", "serde-test"))
+    try {
+      sc.parallelize(1 to 10).filter(Main.fn(_, s)).collect()
+    } finally {
+      sc.stop()
     }
-    .foreach {
-      case (app, results) ⇒
-        results.foreach {
-          case (i, Some(msg)) ⇒
-            println(s"$app, $i: failure: $msg")
-          case (i, _) ⇒
-            println(s"$app, $i: success")
-        }
-        println("")
-    }
+  }
 }

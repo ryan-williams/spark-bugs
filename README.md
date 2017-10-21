@@ -1,10 +1,50 @@
-# spark-bugs
-Dumping ground for repros of issues I find with Apache Spark
+# ClosureCleaner bug
 
-Specific repros can be found in branches:
+In some situations, `ClosureCleaner` fails to include superclass fields referenced in closures passed to RDD operations.
 
-- [SPARK-16599](https://issues.apache.org/jira/browse/SPARK-16599): [`msc`](https://github.com/ryan-williams/spark-bugs/tree/msc) (multiple `SparkContext`s)
-- [SPARK-21143](https://issues.apache.org/jira/browse/SPARK-21143) ([`netty`](https://github.com/ryan-williams/spark-bugs/tree/netty)): multiple Netty versions in transitive-dependencies result in hanging app
-- [SPARK-21425](https://issues.apache.org/jira/browse/SPARK-21425) ([`accum`](https://github.com/ryan-williams/spark-bugs/tree/accum)): static `Accumulator`s considered harmful
-- [SPARK-21569](https://issues.apache.org/jira/browse/SPARK-21569) ([`hf`](https://github.com/ryan-williams/spark-bugs/tree/hf)): missing internal-class Kryo-registration
-- [SPARK-22288](https://issues.apache.org/jira/browse/SPARK-22288) ([`serde`](https://github.com/ryan-williams/spark-bugs/tree/hf)): `no valid constructor` deserialization error
+## Run
+
+```bash
+$ sbt run
+…
+fn:	0, 222, null, bbb
+app1:	0, 222, null, bbb
+app2:	111, 222, aaa, bbb
+app3:	111, 222, aaa, bbb
+fn2:	111, 222, aaa, bbb
+```
+
+See [Main.scala](src/main/scala/Main.scala).
+
+The first two versions, `fn` and `app1`, have superclass fields erroneously nulled out.
+
+`App`s created from this function have this problem:
+
+```scala
+val fn = () ⇒ new App {
+  val n2 = 222
+  val s2 = "bbb"
+  override def body(): Unit = rdd.foreach { 
+    _ ⇒ println(s"$n1, $n2, $s1, $s2") 
+  }
+}
+
+val app1 = fn()  // bad
+```
+
+A slight rearrangement works fine:
+
+```scala
+def makeApp(): App = new App {
+  val n2 = 222
+  val s2 = "bbb"
+  override def body(): Unit = rdd.foreach { 
+    _ ⇒ println(s"$n1, $n2, $s1, $s2") 
+  }
+}
+
+val app3 = makeApp()      // ok
+val fn2 = () ⇒ makeApp()  // ok
+```
+
+The `new App { … }` is identical in both cases, but factoring it out hides the issue (`makeApp`/`fn` demonstrate this); Something specific to the `() => new App { … }` syntax causes the problem.

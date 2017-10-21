@@ -15,7 +15,7 @@ abstract class App extends Serializable {
     body()
     sc.stop()
   }
-  def body(): Unit = {}
+  def body(): Unit
 }
 
 object Main {
@@ -23,7 +23,7 @@ object Main {
   val fn = () ⇒ new App {
     val n2 = 222
     val s2 = "bbb"
-    override def body(): Unit = rdd.foreach { _ ⇒ println(s"$n1, $n2, $s1, $s2") }
+    def body(): Unit = rdd.foreach { _ ⇒ println(s"$n1, $n2, $s1, $s2") }
   }
 
   /** Doesn't serialize closures correctly */
@@ -34,7 +34,7 @@ object Main {
     new App {
       val n2 = 222
       val s2 = "bbb"
-      override def body(): Unit = rdd.foreach { _ ⇒ println(s"$n1, $n2, $s1, $s2") }
+      def body(): Unit = rdd.foreach { _ ⇒ println(s"$n1, $n2, $s1, $s2") }
     }
 
   /** [[App]]s created this way also work fine */
@@ -42,7 +42,7 @@ object Main {
     new App {
       val n2 = 222
       val s2 = "bbb"
-      override def body(): Unit = rdd.foreach { _ ⇒ println(s"$n1, $n2, $s1, $s2") }
+      def body(): Unit = rdd.foreach { _ ⇒ println(s"$n1, $n2, $s1, $s2") }
     }
 
   val app3 = makeApp()  // ok
